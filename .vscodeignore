@@ -1,0 +1,7 @@
+.vscode/**
+src/**
+samples/**
+tsconfig.json
+*.map
+*.gitignore
+**/.typst-preview-*.typ

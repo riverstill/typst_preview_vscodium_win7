@@ -1,0 +1,156 @@
+{
+  "name": "typst-live-preview",
+  "displayName": "Typst Live Preview",
+  "description": "为 .typ 文件提供实时预览（调用本地 typst.exe 编译为 SVG/PNG）",
+  "version": "0.0.1",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:typst",
+    "onCommand:typstPreview.open"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "typst",
+        "aliases": [
+          "Typst",
+          "typst"
+        ],
+        "extensions": [
+          ".typ"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "typstPreview.open",
+        "title": "打开实时预览",
+        "category": "Typst",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "typstPreview.refresh",
+        "title": "刷新预览",
+        "category": "Typst",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "typstPreview.closeAll",
+        "title": "关闭所有预览",
+        "category": "Typst"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "typstPreview.open",
+          "when": "editorLangId == typst",
+          "group": "navigation"
+        },
+        {
+          "command": "typstPreview.refresh",
+          "when": "editorLangId == typst && typstPreview.active",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "typstPreview.open",
+          "when": "resourceExtname == .typ",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "typstPreview.open",
+          "when": "editorLangId == typst"
+        },
+        {
+          "command": "typstPreview.refresh",
+          "when": "typstPreview.active"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "typstPreview.open",
+        "key": "ctrl+alt+v",
+        "when": "editorLangId == typst"
+      },
+      {
+        "command": "typstPreview.refresh",
+        "key": "ctrl+alt+r",
+        "when": "editorLangId == typst && typstPreview.active"
+      }
+    ],
+    "configuration": {
+      "title": "Typst Live Preview",
+      "properties": {
+        "typstPreview.typstPath": {
+          "type": "string",
+          "default": "typst",
+          "description": "typst 可执行文件路径。默认从 PATH 中查找 typst / typst.exe，也可以填写绝对路径，例如 C:\\tools\\typst\\typst.exe"
+        },
+        "typstPreview.root": {
+          "type": "string",
+          "default": "",
+          "description": "传给 typst 的 --root 项目根目录。留空则使用当前文件所在的工作区文件夹；相对路径相对于工作区根目录。"
+        },
+        "typstPreview.format": {
+          "type": "string",
+          "enum": [
+            "svg",
+            "png"
+          ],
+          "enumDescriptions": [
+            "矢量输出，缩放清晰（推荐）",
+            "位图输出，某些字体显示更接近 PDF 效果"
+          ],
+          "default": "svg",
+          "description": "预览渲染格式。"
+        },
+        "typstPreview.ppi": {
+          "type": "number",
+          "default": 144,
+          "minimum": 48,
+          "maximum": 600,
+          "description": "format 为 png 时的渲染分辨率（ppi）。"
+        },
+        "typstPreview.debounce": {
+          "type": "number",
+          "default": 300,
+          "minimum": 50,
+          "maximum": 5000,
+          "description": "编辑停止后触发重新编译的延迟（毫秒）。"
+        },
+        "typstPreview.extraArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "追加到 typst compile 命令的额外参数，例如 [\"--font-path\", \"C:/fonts\"]。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.97.0",
+    "typescript": "^5.4.5"
+  }
+}
