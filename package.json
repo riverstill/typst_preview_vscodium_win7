@@ -1,8 +1,8 @@
 {
   "name": "typst-live-preview",
   "displayName": "Typst Live Preview",
-  "description": "为 .typ 文件提供实时预览（调用本地 typst.exe 编译为 SVG/PNG）",
-  "version": "0.0.1",
+  "description": "为 .typ 文件提供实时预览（内置 typst.exe，编译为 SVG/PNG 显示）",
+  "version": "0.1.0",
   "publisher": "local",
   "license": "MIT",
   "engines": {
@@ -97,8 +97,8 @@
       "properties": {
         "typstPreview.typstPath": {
           "type": "string",
-          "default": "typst",
-          "description": "typst 可执行文件路径。默认从 PATH 中查找 typst / typst.exe，也可以填写绝对路径，例如 C:\\tools\\typst\\typst.exe"
+          "default": "",
+          "description": "typst 可执行文件路径。留空则使用插件内置的 bin\\typst.exe；也可填写绝对路径（例如 C:\\tools\\typst\\typst.exe）或 PATH 中的命令名。"
         },
         "typstPreview.root": {
           "type": "string",

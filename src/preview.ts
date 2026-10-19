@@ -33,6 +33,8 @@ interface RunResult {
 export class TypstPreviewManager implements vscode.Disposable {
   private readonly entries = new Map<string, PreviewEntry>();
   private disposed = false;
+  /** 缓存内置 typst 的探测结果：undefined 表示尚未探测，null 表示没有内置 */
+  private bundledTypstPath: string | null | undefined;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -203,7 +205,7 @@ export class TypstPreviewManager implements vscode.Disposable {
       const cfg = vscode.workspace.getConfiguration('typstPreview', entry.uri);
       const format = cfg.get<OutputFormat>('format', 'svg');
       const ppi = cfg.get<number>('ppi', 144);
-      const typstPath = (cfg.get<string>('typstPath', 'typst') || 'typst').trim();
+      const typstPath = this.resolveTypstPath(cfg);
       const extraArgs = cfg.get<string[]>('extraArgs', []) ?? [];
 
       const doc = await vscode.workspace.openTextDocument(entry.uri);
@@ -261,6 +263,25 @@ export class TypstPreviewManager implements vscode.Disposable {
       return;
     }
     void entry.panel.webview.postMessage(message);
+  }
+
+  /**
+   * 决定使用哪个 typst 可执行文件：
+   * 1. 用户在设置里显式指定的路径；
+   * 2. 插件内置的 bin/typst.exe（打包时随插件发布）；
+   * 3. PATH 中的 typst。
+   */
+  private resolveTypstPath(cfg: vscode.WorkspaceConfiguration): string {
+    const configured = (cfg.get<string>('typstPath', '') || '').trim();
+    if (configured) {
+      return configured;
+    }
+    if (!this.bundledTypstPath) {
+      const exeName = process.platform === 'win32' ? 'typst.exe' : 'typst';
+      const candidate = path.join(this.context.extensionPath, 'bin', exeName);
+      this.bundledTypstPath = fs.existsSync(candidate) ? candidate : null;
+    }
+    return this.bundledTypstPath ?? 'typst';
   }
 
   private resolveRoot(uri: vscode.Uri, cfg: vscode.WorkspaceConfiguration): string | undefined {
@@ -392,9 +413,9 @@ function describeError(err: unknown): string {
     return [
       '找不到 typst 可执行文件。',
       '',
-      '请确认已安装 Typst，并在设置中指定完整路径，例如：',
+      '插件内置的 bin\\typst.exe 不存在或已被设置项覆盖，可在设置中指定完整路径，例如：',
       '  "typstPreview.typstPath": "C:\\\\tools\\\\typst\\\\typst.exe"',
-      '（也可以通过把 typst.exe 所在目录加入 PATH 解决）'
+      '（或把 typst.exe 所在目录加入 PATH；该设置留空则使用插件内置版本）'
     ].join('\n');
   }
   return e && e.message ? e.message : String(err);

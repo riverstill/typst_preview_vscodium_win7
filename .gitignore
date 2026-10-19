@@ -20,3 +20,7 @@ desktop.ini
 npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# 内置的typst.exe
+
+bin/typst.exe

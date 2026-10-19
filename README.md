@@ -12,14 +12,12 @@
 
 ## 前置条件
 
-1. 安装 Typst：<https://github.com/typst/typst/releases>，并把 `typst.exe` 所在目录加入 `PATH`；
-   或者不加入 `PATH`，直接在设置里填绝对路径：
-
-   ```json
-   { "typstPreview.typstPath": "C:\\tools\\typst\\typst.exe" }
-   ```
-
+1. **不需要单独安装 Typst**：插件自带 `bin\typst.exe`（Windows x64、面向 Win7 的 LTO 构建，typst 0.15.1），默认直接使用它。
 2. Node.js（仅构建插件时需要）。
+
+查找顺序：设置项 `typstPreview.typstPath` 非空 → 用它；否则用内置 `bin\typst.exe`；若该文件不存在则回退到 `PATH` 中的 `typst`。
+
+想换成别的版本：把新的 `typst.exe` 覆盖到 `bin\typst.exe` 后重新打包即可。
 
 ## 构建与安装
 
@@ -36,7 +34,7 @@ npm run compile
 
   ```powershell
   npx @vscode/vsce package
-  code --install-extension typst-live-preview-0.0.1.vsix   # VSCodium 用 codium --install-extension ...
+  code --install-extension typst-live-preview-0.1.0.vsix   # VSCodium 用 codium --install-extension ...
   ```
 
   或者在 VSCodium 的扩展视图中 `...` → “从 VSIX 安装…”。
@@ -45,7 +43,7 @@ npm run compile
 
 | 设置 | 默认值 | 说明 |
 | --- | --- | --- |
-| `typstPreview.typstPath` | `typst` | `typst` 可执行文件路径 |
+| `typstPreview.typstPath` | 空 | `typst` 可执行文件路径；留空用内置 `bin\typst.exe` |
 | `typstPreview.root` | 空 | 传给 `--root` 的项目根目录；留空用工作区文件夹 |
 | `typstPreview.format` | `svg` | 渲染格式，`svg`（矢量）或 `png` |
 | `typstPreview.ppi` | `144` | `png` 格式的渲染分辨率 |
