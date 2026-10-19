@@ -1,6 +1,8 @@
 # Typst Live Preview（VSCodium / VS Code 插件）
 
-给 `.typ` 文件加一个实时预览面板：编辑时自动调用本地 `typst.exe` 编译，把每一页渲染成 SVG/PNG 显示在侧边 Webview 里。
+一个简单的VSCode插件，为Win7上的VSCode提供Typst预览。
+
+使用[为win7编译的typst.exe](https://github.com/riverstill/typst-win7)。
 
 ## 功能
 
